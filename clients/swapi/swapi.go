@@ -55,10 +55,36 @@ func (sw *swapiClient) GetStarships() (result models.Starships, err error) {
 }
 
 func (sw *swapiClient) GetPeople(id int) (result models.People, err error) {
+	resource := fmt.Sprintf("/people/%d/", id)
+	res, err := sw.client.Get(sw.baseURL + resource)
+
+	if err != nil {
+		return result, err
+	}
+
+	err = getBody(res, &result)
+
+	if err != nil {
+		return result, err
+	}
+
 	return result, err
 }
 
 func (sw *swapiClient) GetPeoples() (result models.Peoples, err error) {
+	resource := "/people/"
+	res, err := sw.client.Get(sw.baseURL + resource)
+
+	if err != nil {
+		return result, err
+	}
+
+	err = getBody(res, &result)
+
+	if err != nil {
+		return result, err
+	}
+
 	return result, err
 }
 
