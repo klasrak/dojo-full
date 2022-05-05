@@ -1,19 +1,9 @@
 package main
 
-import (
-	"net/http"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-)
+import "swapi/api"
 
 func main() {
-	r := chi.NewMux()
-	r.Use(middleware.Logger)
-
-	URLMapping(r)
-
-	if err := http.ListenAndServe(":3001", r); err != nil {
+	if err := api.Run(); err != nil {
 		panic(err)
 	}
 }
