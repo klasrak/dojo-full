@@ -6,6 +6,6 @@ import (
 
 func URLMapping(router *chi.Mux) {
 	router.Route("/api/v1", func(r chi.Router) {
-		r.Get("/spaceships", GetSpaceshipHandler)
+		r.Get("/starship", GetStarshipHandler)
 	})
 }

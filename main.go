@@ -11,11 +11,9 @@ func main() {
 	r := chi.NewMux()
 	r.Use(middleware.Logger)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, World"))
-	})
-
 	URLMapping(r)
 
-	http.ListenAndServe(":3001", r)
+	if err := http.ListenAndServe(":3001", r); err != nil {
+		panic(err)
+	}
 }
