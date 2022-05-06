@@ -102,3 +102,87 @@ func TestGetStarshipHandler(t *testing.T) {
 		})
 	}
 }
+
+func TestGetStarships(t *testing.T) {
+
+	type TestCase struct {
+		Name                        string
+		ExpectedResponseBody        string
+		ExpectedMockSuccessResponse models.Starships
+		ExpectedMockErrorResponse   error
+		ExpectedMockCallCount       int
+		ExpectedStatusCode          int
+	}
+
+	testCases := []TestCase{
+		{
+			Name: "Success",
+			ExpectedMockSuccessResponse: models.Starships{
+				Count: 1,
+				Results: []models.Starship{
+					{
+						Name:                 "Death Star",
+						Model:                "DS-1 Orbital Battle Station",
+						Manufacturer:         "Imperial Department of Military Research, Sienar Fleet Systems",
+						CostInCredits:        "1000000000000",
+						Length:               "120000",
+						MaxAtmospheringSpeed: "n/a",
+						Crew:                 "342953",
+						Passengers:           "843342",
+						CargoCapacity:        "1000000000000",
+						Consumables:          "3 years",
+						HyperdriveRating:     "4.0",
+						MGLT:                 "10",
+						Class:                "Deep Space Mobile Battlestation",
+						Films: []string{
+							"https://swapi.dev/api/films/1/",
+						},
+					},
+				},
+			},
+			ExpectedResponseBody:  `{"count":1,"results":[{"name":"Death Star","model":"DS-1 Orbital Battle Station","starship_class":"Deep Space Mobile Battlestation","manufacturer":"Imperial Department of Military Research, Sienar Fleet Systems","cost_in_credits":"1000000000000","length":"120000","crew":"342953","passengers":"843342","max_atmosphering_speed":"n/a","hyperdrive_rating":"4.0","MGLT":"10","cargo_capacity":"1000000000000","consumables":"3 years","films":["https://swapi.dev/api/films/1/"],"pilots":null}]}`,
+			ExpectedMockCallCount: 1,
+			ExpectedStatusCode:    http.StatusOK,
+		},
+		{
+			Name:                      "Not Found",
+			ExpectedMockErrorResponse: errors.NewNotFound("starships", ""),
+			ExpectedResponseBody:      `{"type":"NOT_FOUND","message":"resource: starships not found"}`,
+			ExpectedMockCallCount:     1,
+			ExpectedStatusCode:        http.StatusNotFound,
+		},
+		{
+			Name:                      "Internal Server Error",
+			ExpectedMockErrorResponse: errors.NewInternal(),
+			ExpectedResponseBody:      `{"type":"INTERNAL_SERVER_ERROR","message":"Internal server error."}`,
+			ExpectedMockCallCount:     1,
+			ExpectedStatusCode:        http.StatusInternalServerError,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+
+			// Create client mock
+			swapiMock := swapi.MockClient{
+				GetStarshipsFunc: func() (models.Starships, error) {
+					return tc.ExpectedMockSuccessResponse, tc.ExpectedMockErrorResponse
+				},
+				GetStarshipsFuncControl: mockeable.CallsFuncControl{ExpectedCalls: tc.ExpectedMockCallCount},
+			}
+
+			swapiMock.Use()
+			defer mockeable.CleanUpAndAssertControls(t, &swapiMock)
+
+			// Create request
+			handlerURL := "/api/v1/starships"
+
+			// Do request
+			response := DoRequest(http.MethodGet, handlerURL, nil, "")
+
+			// Assert response
+			assert.Equal(t, tc.ExpectedStatusCode, response.StatusCode)
+			assert.JSONEq(t, tc.ExpectedResponseBody, response.StringBody())
+		})
+	}
+}
