@@ -30,22 +30,60 @@ func GetStarshipHandler(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	httphelpers.OK(rw, result)
+}
+
+func GetStarshipsHandler(rw http.ResponseWriter, r *http.Request) {
+	result, err := services.GetStarshipsService()
+
 	if err != nil {
-		httphelpers.InternalServerError(rw)
-		return
+		if errors.Status(err) == http.StatusNotFound {
+			httphelpers.NotFound(rw, err)
+			return
+		} else {
+			httphelpers.InternalServerError(rw)
+			return
+		}
 	}
 
 	httphelpers.OK(rw, result)
 }
 
-func GetStarshipsHandler(rw http.ResponseWriter, r *http.Request) {
-	rw.Write([]byte("GetStarships"))
-}
-
 func GetPeopleHandler(rw http.ResponseWriter, r *http.Request) {
-	rw.Write([]byte("GetPeople"))
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+
+	if err != nil {
+		httphelpers.BadRequest(rw, errors.NewBadRequest("invalid id"))
+		return
+	}
+
+	result, err := services.GetPeopleService(id)
+
+	if err != nil {
+		if errors.Status(err) == http.StatusNotFound {
+			httphelpers.NotFound(rw, err)
+			return
+		} else {
+			httphelpers.InternalServerError(rw)
+			return
+		}
+	}
+
+	httphelpers.OK(rw, result)
 }
 
 func GetPeoplesHandler(rw http.ResponseWriter, r *http.Request) {
-	rw.Write([]byte("GetPeoples"))
+	result, err := services.GetPeoplesService()
+
+	if err != nil {
+		if errors.Status(err) == http.StatusNotFound {
+			httphelpers.NotFound(rw, err)
+			return
+		} else {
+			httphelpers.InternalServerError(rw)
+			return
+		}
+	}
+
+	httphelpers.OK(rw, result)
 }
