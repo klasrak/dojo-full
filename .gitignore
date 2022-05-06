@@ -142,4 +142,8 @@ fabric.properties
 # Ignore code-workspaces
 *.code-workspace
 
+# Temp
+tmp/*.html
+tmp/*.out
+
 # End of https://www.toptal.com/developers/gitignore/api/go,visualstudiocode,jetbrains+all
