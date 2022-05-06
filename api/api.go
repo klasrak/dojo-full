@@ -4,18 +4,29 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 )
 
-func Run() error {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+type Api struct {
+	Server http.Server
+}
 
-	URLMapping(r)
-
-	if err := http.ListenAndServe(":3000", r); err != nil {
+func (s *Api) Run() error {
+	if err := s.Server.ListenAndServe(); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func New() *Api {
+	router := chi.NewRouter()
+
+	URLMapping(router)
+
+	return &Api{
+		Server: http.Server{
+			Addr:    ":3000",
+			Handler: router,
+		},
+	}
 }
