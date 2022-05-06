@@ -26,7 +26,6 @@ func TestRun(t *testing.T) {
 		assert.NotNil(t, api.Server.Handler)
 		assert.NotNil(t, api.Server.Addr)
 		assert.Nil(t, err)
-		// assert.NoError(t, api.Server.Shutdown(context.Background()))
 		assert.NoError(t, api.Server.Close())
 		<-done
 	})
