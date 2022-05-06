@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"swapi/errors"
@@ -31,14 +30,12 @@ func GetStarshipHandler(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	jsonResp, err := json.Marshal(result)
-
 	if err != nil {
 		httphelpers.InternalServerError(rw)
 		return
 	}
 
-	httphelpers.OK(rw, jsonResp)
+	httphelpers.OK(rw, result)
 }
 
 func GetStarshipsHandler(rw http.ResponseWriter, r *http.Request) {
