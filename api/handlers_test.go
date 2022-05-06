@@ -186,3 +186,91 @@ func TestGetStarships(t *testing.T) {
 		})
 	}
 }
+
+func TestGetPeople(t *testing.T) {
+
+	type TestCase struct {
+		Name                        string
+		ID                          interface{}
+		ExpectedResponseBody        string
+		ExpectedStatusCode          int
+		ExpectedMockSuccessResponse models.People
+		ExpectedMockErrorResponse   error
+		ExpectedMockCallCount       int
+	}
+
+	testCases := []TestCase{
+		{
+			Name: "Success",
+			ID:   1,
+			ExpectedMockSuccessResponse: models.People{
+				Name:      "Luke Skywalker",
+				BirthYear: "19BBY",
+				EyeColor:  "blue",
+				Gender:    "male",
+				HairColor: "blond",
+				Height:    "172",
+				Mass:      "77",
+				SkinColor: "fair",
+				Homeworld: "https://swapi.dev/api/planets/1/",
+				Films: []string{
+					"https://swapi.dev/api/films/1/",
+					"https://swapi.dev/api/films/2/",
+					"https://swapi.dev/api/films/3/",
+					"https://swapi.dev/api/films/6/",
+				},
+				Species: []string{},
+				Starships: []string{
+					"https://swapi.dev/api/starships/12/",
+					"https://swapi.dev/api/starships/22/",
+				},
+			},
+			ExpectedResponseBody:  `{"name":"Luke Skywalker","birth_year":"19BBY","eye_color":"blue","gender":"male","hair_color":"blond","height":"172","mass":"77","skin_color":"fair","homeworld":"https://swapi.dev/api/planets/1/","films":["https://swapi.dev/api/films/1/","https://swapi.dev/api/films/2/","https://swapi.dev/api/films/3/","https://swapi.dev/api/films/6/"],"species":[],"starships":["https://swapi.dev/api/starships/12/","https://swapi.dev/api/starships/22/"]}`,
+			ExpectedStatusCode:    http.StatusOK,
+			ExpectedMockCallCount: 1,
+		},
+		{
+			Name:                      "Not Found",
+			ID:                        1,
+			ExpectedMockErrorResponse: errors.NewNotFound("people", "1"),
+			ExpectedResponseBody:      `{"type":"NOT_FOUND","message":"resource: people with id: 1 not found"}`,
+			ExpectedStatusCode:        http.StatusNotFound,
+			ExpectedMockCallCount:     1,
+		},
+		{
+			Name:                      "Internal Server Error",
+			ID:                        1,
+			ExpectedMockErrorResponse: errors.NewInternal(),
+			ExpectedResponseBody:      `{"type":"INTERNAL_SERVER_ERROR","message":"Internal server error."}`,
+			ExpectedStatusCode:        http.StatusInternalServerError,
+			ExpectedMockCallCount:     1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+
+			// Create client mock
+			swapiMock := swapi.MockClient{
+				GetPeopleFunc: func(id int) (models.People, error) {
+					assert.Equal(t, tc.ID, id)
+					return tc.ExpectedMockSuccessResponse, tc.ExpectedMockErrorResponse
+				},
+				GetPeopleFuncControl: mockeable.CallsFuncControl{ExpectedCalls: tc.ExpectedMockCallCount},
+			}
+
+			swapiMock.Use()
+			defer mockeable.CleanUpAndAssertControls(t, &swapiMock)
+
+			// Create request
+			handlerURL := fmt.Sprintf("/api/v1/people/%v", tc.ID)
+
+			// Do request
+			response := DoRequest(http.MethodGet, handlerURL, nil, "")
+
+			// Assert response
+			assert.Equal(t, tc.ExpectedStatusCode, response.StatusCode)
+			assert.JSONEq(t, tc.ExpectedResponseBody, response.StringBody())
+		})
+	}
+}
