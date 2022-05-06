@@ -4,7 +4,7 @@ PWD = $(shell pwd)
 
 test:
 	@echo "---Running tests...---"
-	go test -race ./... -coverprofile=$(PWD)/tmp/c.out
+	go test -race -v ./... -coverprofile=$(PWD)/tmp/c.out
 	@echo "---Generating coverage file...---"
 	go tool cover -html=$(PWD)/tmp/c.out -o $(PWD)/tmp/coverage.html
 

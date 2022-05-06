@@ -245,6 +245,12 @@ func TestGetPeople(t *testing.T) {
 			ExpectedStatusCode:        http.StatusInternalServerError,
 			ExpectedMockCallCount:     1,
 		},
+		{
+			Name:                      "Bad Request",
+			ExpectedMockErrorResponse: errors.NewBadRequest("invalid id"),
+			ExpectedResponseBody:      `{"type":"BAD_REQUEST","message":"Bad request. Reason: invalid id"}`,
+			ExpectedStatusCode:        http.StatusBadRequest,
+		},
 	}
 
 	for _, tc := range testCases {
