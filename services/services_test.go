@@ -53,7 +53,7 @@ func TestGetStarshipService(t *testing.T) {
 		{
 			Name:                  "Not Found",
 			IsErrorFlow:           true,
-			ExpectedErrorResponse: errors.NewNotFound("starship", "1"),
+			ExpectedErrorResponse: errors.NewNotFound("starships", "1"),
 			IDToCall:              1,
 			ExpectedCallCount:     1,
 			ExpectedStatusCode:    http.StatusNotFound,
@@ -259,12 +259,12 @@ func TestGetPeople(t *testing.T) {
 	}
 }
 
-func TestGetPeoples(t *testing.T) {
+func TestGetPeopleList(t *testing.T) {
 
 	type TestCase struct {
 		Name                    string
 		IsErrorFlow             bool
-		ExpectedSuccessResponse models.Peoples
+		ExpectedSuccessResponse models.PeopleList
 		ExpectedErrorResponse   error
 		ExpectedCallCount       int
 		ExpectedStatusCode      int
@@ -273,7 +273,7 @@ func TestGetPeoples(t *testing.T) {
 	testCases := []TestCase{
 		{
 			Name: "Success",
-			ExpectedSuccessResponse: models.Peoples{
+			ExpectedSuccessResponse: models.PeopleList{
 				Count: 1,
 				Results: []models.People{
 					{
@@ -292,7 +292,7 @@ func TestGetPeoples(t *testing.T) {
 		{
 			Name:                  "Not Found",
 			IsErrorFlow:           true,
-			ExpectedErrorResponse: errors.NewNotFound("peoples", ""),
+			ExpectedErrorResponse: errors.NewNotFound("people", ""),
 			ExpectedCallCount:     1,
 			ExpectedStatusCode:    http.StatusNotFound,
 		},
@@ -310,16 +310,16 @@ func TestGetPeoples(t *testing.T) {
 
 			// Create mock client
 			swapiMock := swapi.MockClient{
-				GetPeoplesFunc: func() (models.Peoples, error) {
+				GetPeopleListFunc: func() (models.PeopleList, error) {
 					return tc.ExpectedSuccessResponse, tc.ExpectedErrorResponse
 				},
-				GetPeoplesFuncControl: mockeable.CallsFuncControl{ExpectedCalls: tc.ExpectedCallCount},
+				GetPeopleListFuncControl: mockeable.CallsFuncControl{ExpectedCalls: tc.ExpectedCallCount},
 			}
 
 			swapiMock.Use()
 			defer mockeable.CleanUpAndAssertControls(t, &swapiMock)
 
-			result, err := GetPeoplesService()
+			result, err := GetPeopleListService()
 
 			if tc.IsErrorFlow {
 				assert.NotNil(t, err)

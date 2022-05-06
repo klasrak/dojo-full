@@ -60,8 +60,8 @@ func TestGetStarshipHandler(t *testing.T) {
 			Name:                      "Not Found",
 			ID:                        1,
 			ExpectedStatusCode:        http.StatusNotFound,
-			ExpectedResponseBody:      `{"type":"NOT_FOUND","message":"resource: starship with id: 1 not found"}`,
-			ExpectedMockErrorResponse: errors.NewNotFound("starship", "1"),
+			ExpectedResponseBody:      `{"type":"NOT_FOUND","message":"resource: starships with id: 1 not found"}`,
+			ExpectedMockErrorResponse: errors.NewNotFound("starships", "1"),
 			ExpectedMockCallCount:     1,
 		},
 		{
@@ -91,7 +91,7 @@ func TestGetStarshipHandler(t *testing.T) {
 			defer mockeable.CleanUpAndAssertControls(t, &swapiMock)
 
 			// Create request
-			handlerURL := fmt.Sprintf("/api/v1/starship/%v", tc.ID)
+			handlerURL := fmt.Sprintf("/api/v1/starships/%v", tc.ID)
 
 			// Do request
 			response := DoRequest(http.MethodGet, handlerURL, nil, "")
@@ -281,12 +281,12 @@ func TestGetPeople(t *testing.T) {
 	}
 }
 
-func TestGetPeoples(t *testing.T) {
+func TestGetPeopleList(t *testing.T) {
 
 	type TestCase struct {
 		Name                        string
 		ExpectedResponseBody        string
-		ExpectedMockSuccessResponse models.Peoples
+		ExpectedMockSuccessResponse models.PeopleList
 		ExpectedMockErrorResponse   error
 		ExpectedMockCallCount       int
 		ExpectedStatusCode          int
@@ -295,7 +295,7 @@ func TestGetPeoples(t *testing.T) {
 	testCases := []TestCase{
 		{
 			Name: "Success",
-			ExpectedMockSuccessResponse: models.Peoples{
+			ExpectedMockSuccessResponse: models.PeopleList{
 				Count: 1,
 				Results: []models.People{
 					{
@@ -328,8 +328,8 @@ func TestGetPeoples(t *testing.T) {
 		},
 		{
 			Name:                      "Not Found",
-			ExpectedMockErrorResponse: errors.NewNotFound("peoples", ""),
-			ExpectedResponseBody:      `{"type":"NOT_FOUND","message":"resource: peoples not found"}`,
+			ExpectedMockErrorResponse: errors.NewNotFound("people", ""),
+			ExpectedResponseBody:      `{"type":"NOT_FOUND","message":"resource: people not found"}`,
 			ExpectedStatusCode:        http.StatusNotFound,
 			ExpectedMockCallCount:     1,
 		},
@@ -347,17 +347,17 @@ func TestGetPeoples(t *testing.T) {
 
 			// Create client mock
 			swapiMock := swapi.MockClient{
-				GetPeoplesFunc: func() (models.Peoples, error) {
+				GetPeopleListFunc: func() (models.PeopleList, error) {
 					return tc.ExpectedMockSuccessResponse, tc.ExpectedMockErrorResponse
 				},
-				GetPeoplesFuncControl: mockeable.CallsFuncControl{ExpectedCalls: tc.ExpectedMockCallCount},
+				GetPeopleListFuncControl: mockeable.CallsFuncControl{ExpectedCalls: tc.ExpectedMockCallCount},
 			}
 
 			swapiMock.Use()
 			defer mockeable.CleanUpAndAssertControls(t, &swapiMock)
 
 			// Create request
-			handlerURL := "/api/v1/peoples"
+			handlerURL := "/api/v1/people"
 
 			// Do request
 			response := DoRequest(http.MethodGet, handlerURL, nil, "")

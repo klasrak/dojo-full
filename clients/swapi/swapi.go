@@ -31,7 +31,7 @@ func (sw *swapiClient) GetStarship(id int) (result models.Starship, err error) {
 
 	if res.StatusCode != http.StatusOK {
 		if res.StatusCode == http.StatusNotFound {
-			return result, errors.NewNotFound("starship", fmt.Sprintf("%d", id))
+			return result, errors.NewNotFound("starships", fmt.Sprintf("%d", id))
 		} else {
 			return result, errors.NewInternal()
 		}
@@ -96,7 +96,7 @@ func (sw *swapiClient) GetPeople(id int) (result models.People, err error) {
 	return result, err
 }
 
-func (sw *swapiClient) GetPeoples() (result models.Peoples, err error) {
+func (sw *swapiClient) GetPeopleList() (result models.PeopleList, err error) {
 	resource := "/people/"
 	res, err := sw.client.Get(sw.baseURL + resource)
 
@@ -106,7 +106,7 @@ func (sw *swapiClient) GetPeoples() (result models.Peoples, err error) {
 
 	if res.StatusCode != http.StatusOK {
 		if res.StatusCode == http.StatusNotFound {
-			return result, errors.NewNotFound("peoples", "")
+			return result, errors.NewNotFound("people", "")
 		} else {
 			return result, errors.NewInternal()
 		}

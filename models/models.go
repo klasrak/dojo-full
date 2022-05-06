@@ -38,7 +38,7 @@ type People struct {
 	Starships []string `json:"starships"`
 }
 
-type Peoples struct {
+type PeopleList struct {
 	Count   int      `json:"count"`
 	Results []People `json:"results"`
 }

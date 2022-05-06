@@ -17,6 +17,6 @@ func GetPeopleService(id int) (models.People, error) {
 	return swapi.Instance.GetPeople(id)
 }
 
-func GetPeoplesService() (models.Peoples, error) {
-	return swapi.Instance.GetPeoples()
+func GetPeopleListService() (models.PeopleList, error) {
+	return swapi.Instance.GetPeopleList()
 }

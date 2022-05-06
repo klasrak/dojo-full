@@ -72,8 +72,8 @@ func GetPeopleHandler(rw http.ResponseWriter, r *http.Request) {
 	httphelpers.OK(rw, result)
 }
 
-func GetPeoplesHandler(rw http.ResponseWriter, r *http.Request) {
-	result, err := services.GetPeoplesService()
+func GetPeopleListHandler(rw http.ResponseWriter, r *http.Request) {
+	result, err := services.GetPeopleListService()
 
 	if err != nil {
 		if errors.Status(err) == http.StatusNotFound {
