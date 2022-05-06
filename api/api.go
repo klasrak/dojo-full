@@ -10,6 +10,8 @@ import (
 func Run() error {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.RequestID)
 
 	URLMapping(r)
 
