@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"swapi/errors"
 	"swapi/models"
 )
 
@@ -28,6 +29,14 @@ func (sw *swapiClient) GetStarship(id int) (result models.Starship, err error) {
 		return result, err
 	}
 
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return result, errors.NewNotFound("starship", fmt.Sprintf("%d", id))
+		} else {
+			return result, errors.NewInternal()
+		}
+	}
+
 	err = getBody(res, &result)
 
 	if err != nil {
@@ -43,6 +52,14 @@ func (sw *swapiClient) GetStarships() (result models.Starships, err error) {
 
 	if err != nil {
 		return result, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return result, errors.NewNotFound("starships", "")
+		} else {
+			return result, errors.NewInternal()
+		}
 	}
 
 	err = getBody(res, &result)
@@ -62,6 +79,14 @@ func (sw *swapiClient) GetPeople(id int) (result models.People, err error) {
 		return result, err
 	}
 
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return result, errors.NewNotFound("people", fmt.Sprintf("%d", id))
+		} else {
+			return result, errors.NewInternal()
+		}
+	}
+
 	err = getBody(res, &result)
 
 	if err != nil {
@@ -77,6 +102,14 @@ func (sw *swapiClient) GetPeoples() (result models.Peoples, err error) {
 
 	if err != nil {
 		return result, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			return result, errors.NewNotFound("peoples", "")
+		} else {
+			return result, errors.NewInternal()
+		}
 	}
 
 	err = getBody(res, &result)
